@@ -5,67 +5,223 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的个人博客</title>
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --text-color: #333;
+            --bg-color: #f9f9f9;
+            --card-bg: #fff;
+            --sidebar-bg: #ecf0f1;
+        }
+
+        .dark-mode {
+            --primary-color: #1a252f;
+            --secondary-color: #222f3e;
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --sidebar-bg: #2d2d2d;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            background-color: #f9f9f9;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
+
         header {
-            background-color: #2c3e50;
+            background-color: var(--primary-color);
             color: #fff;
             padding: 20px;
             text-align: center;
+            position: relative;
         }
+
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
         nav {
-            background-color: #34495e;
+            background-color: var(--secondary-color);
             padding: 10px;
         }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
         nav ul {
             display: flex;
             justify-content: center;
             list-style: none;
         }
+
         nav ul li {
             margin: 0 15px;
         }
+
         nav ul li a {
             color: #fff;
             text-decoration: none;
         }
+
         main {
             display: flex;
             max-width: 1200px;
             margin: 20px auto;
             padding: 0 20px;
         }
+
         article {
             flex: 3;
-            background-color: #fff;
+            background-color: var(--card-bg);
             padding: 20px;
             margin-right: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+
+        .post {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .post:last-child {
+            border-bottom: none;
+        }
+
+        .post img {
+            max-width: 100%;
+            height: auto;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .comment-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .comment {
+            background-color: #f5f5f5;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .comment-form {
+            margin-top: 15px;
+        }
+
+        .comment-form input, .comment-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .comment-form button {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
         aside {
             flex: 1;
-            background-color: #ecf0f1;
+            background-color: var(--sidebar-bg);
             padding: 20px;
             border-radius: 5px;
         }
+
+        .subscription {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .subscription input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .subscription button {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 0 5px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
         footer {
             text-align: center;
             padding: 10px;
-            background-color: #2c3e50;
+            background-color: var(--primary-color);
             color: #fff;
             margin-top: 20px;
         }
+
         @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            nav ul {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
             main {
                 flex-direction: column;
             }
@@ -76,9 +232,11 @@
     <header>
         <h1>我的个人博客</h1>
         <p>记录生活点滴与技术分享</p>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     </header>
     <nav>
-        <ul>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <ul id="navMenu">
             <li><a href="#">首页</a></li>
             <li><a href="#">关于我</a></li>
             <li><a href="#">文章分类</a></li>
@@ -92,29 +250,99 @@
                 <h3>如何快速掌握 HTML 基础</h3>
                 <p>发布日期：2026-02-10</p>
                 <p>学习 HTML 是前端开发的第一步，掌握标签和结构是关键...</p>
+                <img src="https://via.placeholder.com/600x300" alt="HTML 基础">
                 <a href="#">阅读全文</a>
+                <div class="comment-section">
+                    <h4>评论 (3)</h4>
+                    <div class="comment">
+                        <p><strong>用户123</strong>: 很有帮助的文章！</p>
+                    </div>
+                    <div class="comment">
+                        <p><strong>前端爱好者</strong>: 感谢分享，学到了很多</p>
+                    </div>
+                    <div class="comment">
+                        <p><strong>新手小白</strong>: 正在学习中，期待更多教程</p>
+                    </div>
+                    <form class="comment-form" onsubmit="submitComment(event)">
+                        <input type="text" placeholder="你的名字" required>
+                        <textarea placeholder="发表评论" required></textarea>
+                        <button type="submit">提交评论</button>
+                    </form>
+                </div>
             </div>
             <div class="post">
                 <h3>CSS 布局技巧分享</h3>
                 <p>发布日期：2026-02-05</p>
                 <p>从 Flex 到 Grid，了解现代 CSS 布局方式...</p>
+                <img src="https://via.placeholder.com/600x300" alt="CSS 布局">
                 <a href="#">阅读全文</a>
+                <div class="comment-section">
+                    <h4>评论 (2)</h4>
+                    <div class="comment">
+                        <p><strong>设计达人</strong>: Grid 布局真的很强大！</p>
+                    </div>
+                    <div class="comment">
+                        <p><strong>响应式爱好者</strong>: 期待更多响应式设计的技巧</p>
+                    </div>
+                    <form class="comment-form" onsubmit="submitComment(event)">
+                        <input type="text" placeholder="你的名字" required>
+                        <textarea placeholder="发表评论" required></textarea>
+                        <button type="submit">提交评论</button>
+                    </form>
+                </div>
+            </div>
+            <div class="pagination">
+                <a href="#">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
             </div>
         </article>
         <aside>
             <h3>关于我</h3>
             <p>一名热爱前端开发的技术爱好者，喜欢分享学习心得与生活感悟。</p>
+            <img src="https://via.placeholder.com/150" alt="我的头像" style="border-radius: 50%; margin: 10px 0;">
             <h3>热门标签</h3>
             <ul>
                 <li>HTML</li>
                 <li>CSS</li>
                 <li>JavaScript</li>
                 <li>前端开发</li>
+                <li>响应式设计</li>
             </ul>
+            <div class="subscription">
+                <h3>订阅更新</h3>
+                <input type="email" placeholder="输入你的邮箱">
+                <button>订阅</button>
+            </div>
         </aside>
     </main>
     <footer>
         <p>&copy; 2026 我的个人博客. 保留所有权利。</p>
     </footer>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        function toggleMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+
+        function submitComment(event) {
+            event.preventDefault();
+            const form = event.target;
+            const name = form.querySelector('input').value;
+            const comment = form.querySelector('textarea').value;
+            
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'comment';
+            commentDiv.innerHTML = `<p><strong>${name}</strong>: ${comment}</p>`;
+            
+            form.parentElement.insertBefore(commentDiv, form);
+            form.reset();
+        }
+    </script>
 </body>
 </html>
